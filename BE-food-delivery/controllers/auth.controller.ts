@@ -44,10 +44,8 @@ export const verifyOtpController = (req: Request, res: Response) => {
   }
 
   delete otpStore[email];
-  {
-    res.json({ message: "OTP verified successfully" });
-    return;
-  }
+  res.json({ message: "OTP verified successfully" });
+  return;
 };
 
 import bcrypt from "bcrypt";
@@ -69,10 +67,8 @@ export const signupController = async (req: Request, res: Response) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = await User.create({ email, password: hashedPassword });
-    {
-      res.status(201).json({ message: "User created", user: newUser });
-      return;
-    }
+    res.status(201).json({ message: "User created", user: newUser });
+    return;
   } catch (error) {
     res.status(500).json({ message: "Error creating user", error });
     return;
@@ -98,10 +94,8 @@ export const updateUserController = async (req: Request, res: Response) => {
       res.status(404).json({ message: "User not found" });
       return;
     }
-    {
-      res.json({ message: "User updated", user: updatedUser });
-      return;
-    }
+    res.json({ message: "User updated", user: updatedUser });
+    return;
   } catch (error) {
     res.status(500).json({ message: "Error updating user", error });
     return;
@@ -123,10 +117,8 @@ export const loginController = async (req: Request, res: Response) => {
       res.status(401).json({ message: "Invalid password" });
       return;
     }
-    {
-      res.json({ message: "Login successful" });
-      return;
-    }
+    res.json({ message: "Login successful" });
+    return;
   } catch (err) {
     res.status(500).json({ message: "Server error" });
     return;
