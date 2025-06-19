@@ -30,7 +30,7 @@ export const Login = ({ onBack }: LoginProps) => {
       validationSchema={LoginSchema}
       onSubmit={async (values, { setSubmitting }) => {
         try {
-          const res = await axios.post("http://localhost:8000/login", {
+          const res = await axios.post("http://localhost:8000/api/auth/login", {
             email: values.email,
             password: values.password,
           });

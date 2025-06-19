@@ -39,10 +39,13 @@ export const LeftStep2 = ({ onBack, email }: LeftStep2Props) => {
       validationSchema={FormSchema}
       onSubmit={async (values, { setSubmitting }) => {
         try {
-          const response = await axios.post("http://localhost:8000/signup", {
-            email,
-            password: values.pass,
-          });
+          const response = await axios.post(
+            "http://localhost:8000/api/auth/signup",
+            {
+              email,
+              password: values.pass,
+            }
+          );
           alert(response.data.message);
           // Maybe redirect after signup?
           router.push("/login");
