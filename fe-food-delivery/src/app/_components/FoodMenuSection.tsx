@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Plus } from "lucide-react";
-import { useCart } from "@/app/context/CartContext"; // 👈 import cart context
+import { useCart } from "@/context/CartContext"; // 👈 import cart context
 
 const appetizers = [
   {

@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { Minus, Plus, X } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
