@@ -185,6 +185,7 @@ export const verifyResetPasswordRequestController = (
     return;
   }
   res.json({ message: "OTP verified" });
+  return;
 };
 
 export const resetPasswordController = async (req: Request, res: Response) => {
@@ -215,7 +216,9 @@ export const resetPasswordController = async (req: Request, res: Response) => {
     }
     delete resetOtpStore[email];
     res.json({ message: "Password updated" });
+    return;
   } catch (err) {
     res.status(500).json({ message: "Failed to update password" });
+    return;
   }
 };
