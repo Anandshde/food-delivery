@@ -19,28 +19,31 @@ export function DeliveryAddressDialog() {
 
   const handleSubmit = () => {
     console.log("📦 Address:", address);
-    setOpen(false); // close dialog
+    setOpen(false); // Close the dialog
   };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
-          className="w-[251px] h-[36px] color-[#71717A] bg-[#FFFFFF] rounded-2xl"
+          className="w-[251px] h-[36px] text-sm text-[#71717A] bg-white rounded-2xl flex items-center justify-between px-4"
           variant="ghost"
         >
-          <MapPin />
-          Delivery address: Add Location
-          <ArrowRight />
+          <div className="flex items-center gap-2">
+            <MapPin size={16} />
+            <span>Delivery address</span>
+          </div>
+          <ArrowRight size={16} />
         </Button>
       </DialogTrigger>
+
       <DialogContent className="sm:max-w-md rounded-2xl p-6">
         <DialogHeader>
           <DialogTitle className="text-lg font-semibold">
-            Please write your delivery address!
+            Enter your delivery address
           </DialogTitle>
           <DialogDescription className="text-sm text-muted-foreground">
-            Please share your complete address
+            We need this to deliver your food quickly and accurately.
           </DialogDescription>
         </DialogHeader>
 
@@ -55,7 +58,9 @@ export function DeliveryAddressDialog() {
           <Button variant="outline" onClick={() => setOpen(false)}>
             Cancel
           </Button>
-          <Button onClick={handleSubmit}>Deliver Here</Button>
+          <Button onClick={handleSubmit} disabled={!address.trim()}>
+            Deliver Here
+          </Button>
         </div>
       </DialogContent>
     </Dialog>
