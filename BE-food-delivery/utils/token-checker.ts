@@ -1,5 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export const tokenChecker = async (
   request: Request,
@@ -14,7 +17,11 @@ export const tokenChecker = async (
   }
   const token = authorization.split(" ")[1];
 
-  const tokenPassword = "foodDelivery";
+  const tokenPassword = process.env.JWT_SECRET;
+  if (!tokenPassword) {
+    response.status(500).send({ message: "JWT secret not configured" });
+    return;
+  }
   try {
     const isValid = jwt.verify(token, tokenPassword);
     if (isValid) {

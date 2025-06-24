@@ -22,7 +22,7 @@ type FoodOrderModelType = {
 const FoodOrderItemSchema = new Schema<FoodOrderItemModelType>(
   {
     quantity: { type: Number, required: true },
-    food: { type: Schema.Types.ObjectId, ref: "Foods", required: true },
+    food: { type: Schema.Types.ObjectId, ref: "Food", required: true },
   },
   { _id: false }
 );
