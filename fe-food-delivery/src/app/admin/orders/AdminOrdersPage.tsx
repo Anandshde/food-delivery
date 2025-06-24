@@ -7,6 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import api from "@/lib/api";
 
 export type OrderStatus = "Pending" | "Delivered" | "Canceled";
@@ -27,6 +28,7 @@ export interface OrderItem {
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<OrderItem[]>([]);
+  const router = useRouter();
 
   const handleStatusChange = async (id: string, status: OrderStatus) => {
     try {
@@ -69,8 +71,8 @@ export default function AdminOrdersPage() {
       <aside className="w-[260px] bg-white border-r p-6 flex flex-col gap-6">
         <div className="text-2xl font-bold text-red-500">NomNom</div>
         <nav className="flex flex-col gap-2 text-gray-700">
-          <Button> Orders</Button>
-          <Button> Food menu</Button>
+          <Button onClick={() => router.push("/admin")}>Orders</Button>
+          <Button onClick={() => router.push("/admin/menu")}>Food menu</Button>
         </nav>
       </aside>
 
