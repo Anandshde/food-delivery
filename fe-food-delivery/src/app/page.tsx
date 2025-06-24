@@ -1,4 +1,9 @@
+import { HomeComponent } from "./_components/page";
+
 export default function Home() {
-  return <div>Welcome to world</div>;
-  //vfxa cmil fjen ibkg
+  return (
+    <div>
+      <HomeComponent />
+    </div>
+  );
 }
