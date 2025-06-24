@@ -69,15 +69,15 @@ export function FoodMenuSection() {
               <div className="flex justify-between items-start mb-2">
                 <h3 className="text-base font-semibold">{item.name}</h3>
                 <button
-                  onClick={() =>
+                  onClick={() => {
+                    console.log("clicked");
                     addToCart({
                       name: item.name,
                       description: item.description,
                       image: item.image,
                       price: item.price,
-                    })
-                  }
-                  className="bg-red-500 rounded-full p-1 hover:bg-red-600 text-white"
+                    });
+                  }}
                 >
                   <Plus size={18} />
                 </button>
