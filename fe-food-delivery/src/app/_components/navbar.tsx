@@ -1,4 +1,5 @@
 import { DeliveryAddressDialog } from "./DeliveryAdressDialog";
+import CartDrawer from "./CartDrawer";
 import { ShoppingCart, User } from "lucide-react";
 
 export const Navbar = () => {
@@ -21,7 +22,9 @@ export const Navbar = () => {
         {/* Right Section */}
         <div className="flex items-center space-x-6">
           <DeliveryAddressDialog />
-          <ShoppingCart className="text-black cursor-pointer bg-[#F4F4F5] rounded-full h-9 w-9 p-1" />
+          <CartDrawer>
+            <ShoppingCart className="text-black cursor-pointer bg-[#F4F4F5] rounded-full h-9 w-9 p-1" />
+          </CartDrawer>
 
           <User className="text-white cursor-pointer bg-[#EF4444] rounded-full h-9 w-9 p-1" />
         </div>
