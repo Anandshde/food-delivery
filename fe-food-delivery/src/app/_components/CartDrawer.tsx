@@ -11,9 +11,10 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useState, ReactNode } from "react";
+import { useState, ReactNode, useEffect } from "react";
 import { Minus, Plus, Trash2, Clock, CheckCircle } from "lucide-react";
 import { useCart } from "@/context/CartContext";
+import api from "@/lib/api";
 
 export default function CartDrawer({ children }: { children?: ReactNode }) {
   const { cart, increment, decrement, remove, clearCart } = useCart();
@@ -24,22 +25,34 @@ export default function CartDrawer({ children }: { children?: ReactNode }) {
     0
   );
 
-  const orders = [
-    {
-      id: "#20156",
-      date: "2024/12/20",
-      total: 26.97,
-      status: "Pending",
-      items: ["Sunshine Stackers", "Sunshine Stackers"],
-    },
-    {
-      id: "#20155",
-      date: "2024/12/19",
-      total: 12.99,
-      status: "Delivered",
-      items: ["Sunshine Stackers"],
-    },
-  ];
+  type Order = {
+    id: string;
+    date: string;
+    total: number;
+    status: string;
+    items: string[];
+  };
+
+  const [orders, setOrders] = useState<Order[]>([]);
+
+  useEffect(() => {
+    async function fetchOrders() {
+      try {
+        const res = await api.get("/order/getOrders");
+        const data: Order[] = res.data.order.map((o: any) => ({
+          id: o._id,
+          date: new Date(o.createdAt).toLocaleDateString(),
+          total: o.totalPrice,
+          status: o.status,
+          items: o.foodOrderItems.map((i: any) => i.name),
+        }));
+        setOrders(data);
+      } catch (err) {
+        console.error("Failed to fetch orders", err);
+      }
+    }
+    fetchOrders();
+  }, []);
 
   return (
     <Sheet>
@@ -200,11 +213,34 @@ export default function CartDrawer({ children }: { children?: ReactNode }) {
 
         <Button
           className="w-full mt-6"
-          onClick={() => {
+          onClick={async () => {
             if (cart.length === 0) return;
-            alert(`✅ Order placed to: ${address}`);
-            clearCart();
-            setAddress("");
+            try {
+              await api.post("/order/createOrder", {
+                address,
+                totalPrice,
+                foodOrderItems: cart.map((c) => ({
+                  name: c.name,
+                  image: c.image,
+                  price: c.price,
+                  quantity: c.quantity,
+                })),
+              });
+              alert(`✅ Order placed to: ${address}`);
+              clearCart();
+              setAddress("");
+              const res = await api.get("/order/getOrders");
+              const data: Order[] = res.data.order.map((o: any) => ({
+                id: o._id,
+                date: new Date(o.createdAt).toLocaleDateString(),
+                total: o.totalPrice,
+                status: o.status,
+                items: o.foodOrderItems.map((i: any) => i.name),
+              }));
+              setOrders(data);
+            } catch (err) {
+              alert("Failed to place order");
+            }
           }}
         >
           Checkout

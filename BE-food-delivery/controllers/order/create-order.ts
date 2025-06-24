@@ -2,9 +2,10 @@ import { Request, Response } from "express";
 import { FoodOrderModel } from "../../models/Order";
 
 export const createOrder = async (req: Request, res: Response) => {
-  const { user, totalPrice, foodOrderItems } = req.body;
+  const { totalPrice, foodOrderItems, address } = req.body;
+  const user = res.locals.userId;
   try {
-    await FoodOrderModel.create({ user, totalPrice, foodOrderItems });
+    await FoodOrderModel.create({ user, totalPrice, foodOrderItems, address });
     res.status(200).send({ message: "succesfully created order" });
     return;
   } catch (err) {
