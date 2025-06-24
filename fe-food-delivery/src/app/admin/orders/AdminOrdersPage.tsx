@@ -49,8 +49,8 @@ export default function AdminOrdersPage() {
           _id: o._id,
           customer: o.user?.email || "Unknown",
           items: o.foodOrderItems.map((i: any) => ({
-            name: i.food?.foodName || "",
-            image: i.food?.image || "",
+            name: i.name,
+            image: i.image,
             quantity: i.quantity,
           })),
           date: new Date(o.createdAt).toLocaleDateString(),
