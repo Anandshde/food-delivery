@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as yup from "yup";
-import axios from "axios";
+import api from "@/lib/api";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
@@ -30,11 +30,12 @@ export const Login = ({ onBack }: LoginProps) => {
       validationSchema={LoginSchema}
       onSubmit={async (values, { setSubmitting }) => {
         try {
-          const res = await axios.post("http://localhost:8000/api/auth/login", {
+          const res = await api.post("/auth/login", {
             email: values.email,
             password: values.password,
           });
 
+          localStorage.setItem("token", res.data.token);
           alert("Login successful! Welcome back.");
           router.push("/");
         } catch (err: any) {

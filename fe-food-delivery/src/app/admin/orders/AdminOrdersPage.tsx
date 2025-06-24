@@ -6,6 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "lucide-react";
+import { useEffect, useState } from "react";
+import api from "@/lib/api";
 
 export type OrderStatus = "Pending" | "Delivered" | "Canceled";
 
@@ -23,26 +25,44 @@ export interface OrderItem {
   status: OrderStatus;
 }
 
-const orders = [
-  {
-    id: "1",
-    email: "test@gmail.com",
-    items: [
-      {
-        name: "Sunshine Stackers",
-        image: "/images/stacker.jpg",
-        quantity: 2,
-      },
-    ],
-    total: "$23.97",
-    date: "2024/07/12",
-    address: "2034/UTC/41, Ts, 10-р хороо, УБ",
-    status: "Pending",
-  },
-  // Add more mock orders...
-];
-
 export default function AdminOrdersPage() {
+  const [orders, setOrders] = useState<OrderItem[]>([]);
+
+  const handleStatusChange = async (id: string, status: OrderStatus) => {
+    try {
+      await api.patch("/order/updateStatus", { orderId: id, status });
+      setOrders((prev) =>
+        prev.map((o) => (o._id === id ? { ...o, status } : o))
+      );
+    } catch (err) {
+      console.error("Failed to update status", err);
+    }
+  };
+
+  useEffect(() => {
+    async function fetchOrders() {
+      try {
+        const res = await api.get("/order/getOrders");
+        const mapped: OrderItem[] = res.data.order.map((o: any) => ({
+          _id: o._id,
+          customer: o.user?.email || "Unknown",
+          items: o.foodOrderItems.map((i: any) => ({
+            name: i.food?.foodName || "",
+            image: i.food?.image || "",
+            quantity: i.quantity,
+          })),
+          date: new Date(o.createdAt).toLocaleDateString(),
+          total: o.totalPrice,
+          address: o.address || "",
+          status: o.status,
+        }));
+        setOrders(mapped);
+      } catch (err) {
+        console.error("Failed to fetch orders", err);
+      }
+    }
+    fetchOrders();
+  }, []);
   return (
     <div className="flex h-screen bg-gray-100 text-sm">
       {/* Sidebar */}
@@ -85,9 +105,9 @@ export default function AdminOrdersPage() {
             </thead>
             <tbody>
               {orders.map((order, i) => (
-                <tr key={order.id} className="border-t hover:bg-gray-50">
+                <tr key={order._id} className="border-t hover:bg-gray-50">
                   <td className="p-4">{i + 1}</td>
-                  <td>{order.email}</td>
+                  <td>{order.customer}</td>
                   <td>
                     <div className="flex gap-2 items-center">
                       {order.items.map((item, idx) => (
@@ -103,20 +123,29 @@ export default function AdminOrdersPage() {
                     </div>
                   </td>
                   <td>{order.date}</td>
-                  <td>{order.total}</td>
+                  <td>${order.total.toFixed?.(2) ?? order.total}</td>
                   <td>{order.address}</td>
                   <td>
-                    <Badge
-                      className={
-                        order.status === "Delivered"
-                          ? "bg-green-500 text-white"
-                          : order.status === "Pending"
-                          ? "bg-yellow-500 text-white"
-                          : "bg-red-500 text-white"
+                    <select
+                      value={order.status}
+                      onChange={(e) =>
+                        handleStatusChange(
+                          order._id,
+                          e.target.value as OrderStatus
+                        )
                       }
+                      className="border rounded p-1"
                     >
-                      {order.status}
-                    </Badge>
+                      {[
+                        "PENDING",
+                        "DELIVERED",
+                        "CANCELED",
+                      ].map((s) => (
+                        <option key={s} value={s}>
+                          {s}
+                        </option>
+                      ))}
+                    </select>
                   </td>
                 </tr>
               ))}
