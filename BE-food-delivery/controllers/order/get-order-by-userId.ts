@@ -6,7 +6,7 @@ export const getOrdersByUsersId = async (_req: Request, res: Response) => {
   try {
     const allOrdersUserById = await FoodOrderModel.find({
       user: userId,
-    }).populate("foodOrderItem");
+    }).populate("foodOrderItems.food");
     res.status(200).send({ order: allOrdersUserById });
   } catch (err) {
     res.status(400).send({ message: "Cannot Get Orders" });

@@ -11,8 +11,8 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
-app.use("/routes/auth", authRoutes);
-app.use("/routes/order", OrderRouter);
+app.use("/api/auth", authRoutes);
+app.use("/api/order", OrderRouter);
 
 connectDB().catch((err) => {
   console.error("❌ Failed to connect to database:", err);
