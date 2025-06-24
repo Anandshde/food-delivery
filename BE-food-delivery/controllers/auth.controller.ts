@@ -4,6 +4,7 @@ import { sendOtpEmail } from "../utils/mailer";
 import { createToken } from "../utils/jwt";
 
 const otpStore: Record<string, { otp: string; expires: number }> = {};
+const resetOtpStore: Record<string, { otp: string; expires: number }> = {};
 
 export const sendOtpController = async (req: Request, res: Response) => {
   const { email } = req.body;
@@ -135,5 +136,86 @@ export const loginController = async (req: Request, res: Response) => {
   } catch (err) {
     res.status(500).json({ message: "Server error" });
     return;
+  }
+};
+
+export const resetPasswordRequestController = async (
+  req: Request,
+  res: Response
+) => {
+  const { email } = req.body;
+  if (!email) {
+    res.status(400).json({ message: "Email is required" });
+    return;
+  }
+  const user = await User.findOne({ email });
+  if (!user) {
+    res.status(404).json({ message: "User not found" });
+    return;
+  }
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  const expires = Date.now() + 5 * 60 * 1000;
+  resetOtpStore[email] = { otp, expires };
+  try {
+    await sendOtpEmail(email, otp);
+    res.json({ message: "Reset OTP sent" });
+    return;
+  } catch (err) {
+    res.status(500).json({ message: "Failed to send OTP" });
+    return;
+  }
+};
+
+export const verifyResetPasswordRequestController = (
+  req: Request,
+  res: Response
+) => {
+  const { email, otp } = req.body;
+  const record = resetOtpStore[email];
+  if (!record) {
+    res.status(400).json({ message: "No OTP sent" });
+    return;
+  }
+  if (Date.now() > record.expires) {
+    res.status(400).json({ message: "OTP expired" });
+    return;
+  }
+  if (record.otp !== otp) {
+    res.status(400).json({ message: "Invalid OTP" });
+    return;
+  }
+  res.json({ message: "OTP verified" });
+};
+
+export const resetPasswordController = async (req: Request, res: Response) => {
+  const { email, otp, password } = req.body;
+  if (!email || !otp || !password) {
+    res.status(400).json({ message: "Email, otp and password are required" });
+    return;
+  }
+  const record = resetOtpStore[email];
+  if (!record) {
+    res.status(400).json({ message: "No OTP sent" });
+    return;
+  }
+  if (Date.now() > record.expires || record.otp !== otp) {
+    res.status(400).json({ message: "Invalid or expired OTP" });
+    return;
+  }
+  try {
+    const hashed = await bcrypt.hash(password, 10);
+    const updated = await User.findOneAndUpdate(
+      { email },
+      { password: hashed, updatedAt: new Date() },
+      { new: true }
+    );
+    if (!updated) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+    delete resetOtpStore[email];
+    res.json({ message: "Password updated" });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to update password" });
   }
 };

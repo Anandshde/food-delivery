@@ -1,14 +1,16 @@
 "use client";
 import React from "react";
+import { useRouter } from "next/navigation";
 import { Right } from "../signup/_components/Right";
 import { PasswordReset } from "./_components/PasswordReset";
 
 const EmailVerificationPage = () => {
+  const router = useRouter();
   return (
     <div className="flex h-screen p-5">
       {/* Left Form Section */}
       <div className="flex w-1/3 justify-center items-center">
-        <PasswordReset onBack={() => console.log("Back button clicked")} />
+        <PasswordReset onBack={() => router.push('/login')} />
       </div>
 
       {/* Right Image Section */}
