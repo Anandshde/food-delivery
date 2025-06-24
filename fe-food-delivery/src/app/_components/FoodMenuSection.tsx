@@ -10,35 +10,40 @@ const appetizers = [
     description:
       "Fluffy pancakes stacked with fruits, cream, syrup, and powdered sugar.",
     price: 12.99,
-    image: "/images/finger-food.jpg",
+    image:
+      "https://res.cloudinary.com/duazor4ye/image/upload/v1750382004/BG_sbh1af.png",
   },
   {
     name: "Cranberry Brie Bites",
     description:
       "Fluffy pancakes stacked with fruits, cream, syrup, and powdered sugar.",
     price: 12.99,
-    image: "/images/cranberry.jpg",
+    image:
+      "https://res.cloudinary.com/duazor4ye/image/upload/v1750382004/BG_sbh1af.png",
   },
   {
     name: "Sunshine Stackers",
     description:
       "Fluffy pancakes stacked with fruits, cream, syrup, and powdered sugar.",
     price: 12.99,
-    image: "/images/stackers.jpg",
+    image:
+      "https://res.cloudinary.com/duazor4ye/image/upload/v1750382004/BG_sbh1af.png",
   },
   {
     name: "Brie Crostini Appetizer",
     description:
       "Fluffy pancakes stacked with fruits, cream, syrup, and powdered sugar.",
     price: 12.99,
-    image: "/images/brie.jpg",
+    image:
+      "https://res.cloudinary.com/duazor4ye/image/upload/v1750382004/BG_sbh1af.png",
   },
   {
     name: "Grilled chicken",
     description:
       "Fluffy pancakes stacked with fruits, cream, syrup, and powdered sugar.",
     price: 12.99,
-    image: "/images/chicken.jpg",
+    image:
+      "https://res.cloudinary.com/duazor4ye/image/upload/v1750382004/BG_sbh1af.png",
   },
 ];
 
