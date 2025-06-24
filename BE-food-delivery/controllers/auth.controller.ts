@@ -1,6 +1,7 @@
 // controllers/auth.controller.ts
 import { Request, Response } from "express";
 import { sendOtpEmail } from "../utils/mailer";
+import { createToken } from "../utils/jwt";
 
 const otpStore: Record<string, { otp: string; expires: number }> = {};
 
@@ -117,7 +118,19 @@ export const loginController = async (req: Request, res: Response) => {
       res.status(401).json({ message: "Invalid password" });
       return;
     }
-    res.json({ message: "Login successful" });
+    const token = createToken({
+      _id: user._id,
+      email: user.email,
+    });
+
+    res.json({
+      message: "Login successful",
+      token,
+      user: {
+        _id: user._id,
+        email: user.email,
+      },
+    });
     return;
   } catch (err) {
     res.status(500).json({ message: "Server error" });
