@@ -11,12 +11,16 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useState } from "react";
+import { useState, ReactNode } from "react";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { useCart } from "@/context/CartContext"; // ✅ import context
 
-export default function CartDrawer() {
-  const { cart, increment, decrement, remove, clearCart } = useCart(); // ✅ get from context
+export default function CartDrawer({
+  children,
+}: {
+  children?: ReactNode;
+}) {
+  const { cart, increment, decrement, remove, clearCart } = useCart();
 
   const [address, setAddress] = useState("");
 
@@ -28,7 +32,7 @@ export default function CartDrawer() {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="outline">Cart</Button>
+        {children ?? <Button variant="outline">Cart</Button>}
       </SheetTrigger>
       <SheetContent side="right" className="w-[400px] sm:w-[450px]">
         <SheetHeader>
