@@ -2,7 +2,14 @@
 
 import { useState } from "react";
 import { Plus } from "lucide-react";
-import { useCart } from "@/context/CartContext"; // 👈 import cart context
+import { FoodDetailDialog } from "./FoodDetailDialog";
+
+type FoodItem = {
+  name: string;
+  description: string;
+  price: number;
+  image: string;
+};
 
 const appetizers = [
   {
@@ -48,10 +55,11 @@ const appetizers = [
 ];
 
 export function FoodMenuSection() {
-  const { addToCart } = useCart(); // ✅ use cart context
+  const [selectedFood, setSelectedFood] = useState<FoodItem | null>(null);
 
   return (
-    <section className="px-6 md:px-20 py-12 bg-[#2c2c2c] text-white">
+    <>
+      <section className="px-6 md:px-20 py-12 bg-[#2c2c2c] text-white">
       <h2 className="text-2xl font-bold mb-6">Appetizers</h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -68,17 +76,7 @@ export function FoodMenuSection() {
             <div className="p-4">
               <div className="flex justify-between items-start mb-2">
                 <h3 className="text-base font-semibold">{item.name}</h3>
-                <button
-                  onClick={() => {
-                    console.log("clicked");
-                    addToCart({
-                      name: item.name,
-                      description: item.description,
-                      image: item.image,
-                      price: item.price,
-                    });
-                  }}
-                >
+                <button onClick={() => setSelectedFood(item)}>
                   <Plus size={18} />
                 </button>
               </div>
@@ -91,5 +89,13 @@ export function FoodMenuSection() {
         ))}
       </div>
     </section>
+      {selectedFood && (
+        <FoodDetailDialog
+          open={true}
+          onClose={() => setSelectedFood(null)}
+          food={selectedFood}
+        />
+      )}
+    </>
   );
 }
