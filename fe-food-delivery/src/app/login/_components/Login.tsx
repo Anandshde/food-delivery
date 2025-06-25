@@ -36,6 +36,8 @@ export const Login = ({ onBack }: LoginProps) => {
           });
 
           localStorage.setItem("token", res.data.token);
+          // store logged in user's id
+          localStorage.setItem("userId", res.data.user._id);
           alert("Login successful! Welcome back.");
           router.push("/");
         } catch (err: any) {
