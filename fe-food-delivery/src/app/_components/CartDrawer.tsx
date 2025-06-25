@@ -215,10 +215,19 @@ export default function CartDrawer({ children }: { children?: ReactNode }) {
           className="w-full mt-6"
           onClick={async () => {
             if (cart.length === 0) return;
+
+            const userId = localStorage.getItem("userId"); // get user ID from localStorage
+
+            if (!userId) {
+              alert("User not found. Please log in.");
+              return;
+            }
+
             try {
               await api.post("/order/createOrder", {
+                user: userId,
                 address,
-                totalPrice,
+                totalPrice: totalPrice + 0.99, // include shipping
                 foodOrderItems: cart.map((c) => ({
                   name: c.name,
                   image: c.image,
@@ -226,9 +235,12 @@ export default function CartDrawer({ children }: { children?: ReactNode }) {
                   quantity: c.quantity,
                 })),
               });
+
               alert(`✅ Order placed to: ${address}`);
               clearCart();
               setAddress("");
+
+              // Refresh orders
               const res = await api.get("/order/getOrders");
               const data: Order[] = res.data.order.map((o: any) => ({
                 id: o._id,
@@ -239,7 +251,8 @@ export default function CartDrawer({ children }: { children?: ReactNode }) {
               }));
               setOrders(data);
             } catch (err) {
-              alert("Failed to place order");
+              console.error("Order error:", err);
+              alert("❌ Failed to place order");
             }
           }}
         >
