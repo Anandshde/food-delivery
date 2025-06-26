@@ -21,7 +21,7 @@ interface Props {
   onAdd: (food: any) => void;
 }
 
-export default function AddNewFoodCardWithDialog({ category, onAdd }: Props) {
+export default function AddFoodDialog({ category, onAdd }: Props) {
   const [open, setOpen] = useState(false);
 
   const FoodSchema = yup.object().shape({
