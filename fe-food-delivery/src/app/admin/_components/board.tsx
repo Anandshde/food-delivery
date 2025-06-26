@@ -139,9 +139,7 @@ export default function AdminOrders() {
                     ))}
                   </TableCell>
                   <TableCell>{order.date}</TableCell>
-                  <TableCell className="text-right">
-                    ${order.total.toFixed(2)}
-                  </TableCell>
+                  <TableCell>${order.total.toFixed(2)}</TableCell>
                   <TableCell>{order.address}</TableCell>
                   <TableCell>
                     <div className="inline-flex items-center gap-2">
