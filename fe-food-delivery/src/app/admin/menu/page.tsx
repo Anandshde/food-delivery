@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import api from "@/lib/api";
 import AddFoodDialog from "./AddFoodDialog";
+import AddNewFoodCardWithDialog from "./AddFoodDialog";
 
 export default function AdminFoodMenuPage() {
   const [foods, setFoods] = useState<any[]>([]);
@@ -27,8 +28,26 @@ export default function AdminFoodMenuPage() {
     <div className="flex h-screen bg-gray-100 text-sm">
       <main className="flex-1 p-8 overflow-y-auto">
         <div className="flex items-center justify-between mb-4">
+          <div className="flex flex-wrap items-center gap-2">
+            {categories.map((cat) => (
+              <Button key={cat} variant="ghost" className="rounded-full">
+                {cat}
+              </Button>
+            ))}
+            <AddCategoryDialog
+              onAdd={(newCat) => setCategories([...categories, newCat])}
+            />
+          </div>
+
           <h1 className="text-xl font-semibold">Food menu</h1>
-          <AddFoodDialog onAdd={(f) => setFoods((prev) => [...prev, f])} />
+          <AddFoodDialog
+            onAdd={(f) => setFoods((prev) => [...prev, f])}
+            category={"Salads"}
+          />
+          <AddNewFoodCardWithDialog
+            category="Salads"
+            onAdd={(newFood) => fetch()}
+          />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {loading ? (
@@ -45,7 +64,9 @@ export default function AdminFoodMenuPage() {
                 />
                 <h3 className="mt-2 font-semibold">{food.foodName}</h3>
                 <p className="text-sm text-gray-600">{food.ingriedents}</p>
-                <p className="font-bold">${food.price?.toFixed?.(2) ?? food.price}</p>
+                <p className="font-bold">
+                  ${food.price?.toFixed?.(2) ?? food.price}
+                </p>
               </div>
             ))
           )}
