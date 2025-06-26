@@ -224,41 +224,36 @@ export default function CartDrawer({ children }: { children?: ReactNode }) {
               return;
             }
 
-            const token = localStorage.getItem("token"); // or your auth system
+            const token = localStorage.getItem("token");
             if (!token) {
               alert("⚠️ Please log in first.");
               return;
             }
 
             try {
-              console.log("Submitting order with:", {
+              const payload = {
                 address,
                 totalPrice: totalPrice + 0.99,
-                foodOrderItems: cart,
-              });
+                foodOrderItems: cart.map((c) => ({
+                  name: c.name, // ✅ required by backend
+                  image: c.image, // ✅ required by backend
+                  price: c.price,
+                  quantity: c.quantity,
+                })),
+              };
 
-              await api.post(
-                "/order/createOrder",
-                {
-                  address,
-                  totalPrice: totalPrice + 0.99,
-                  foodOrderItems: cart.map((c) => ({
-                    _id: c.id,
-                    quantity: c.quantity,
-                  })),
+              console.log("✅ Sending payload:", payload);
+
+              await api.post("/order/createOrder", payload, {
+                headers: {
+                  Authorization: `Bearer ${token}`,
                 },
-                {
-                  headers: {
-                    Authorization: `Bearer ${token}`,
-                  },
-                }
-              );
+              });
 
               alert(`✅ Order placed to: ${address}`);
               clearCart();
               setAddress("");
 
-              // Refresh orders
               const res = await api.get("/order/getOrders");
               const data: Order[] = res.data.order.map((o: any) => ({
                 id: o._id,
@@ -268,9 +263,8 @@ export default function CartDrawer({ children }: { children?: ReactNode }) {
                 items: o.foodOrderItems.map((i: any) => i.name),
               }));
               setOrders(data);
-            } catch (err) {
-              console.error("Order error:", err);
-
+            } catch (err: any) {
+              console.error("❌ Order error:", err);
               alert("❌ Failed to place order");
             }
           }}

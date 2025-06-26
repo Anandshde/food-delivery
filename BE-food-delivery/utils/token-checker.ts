@@ -27,6 +27,7 @@ export const tokenChecker = async (
     if (isValid) {
       const destructToken: any = jwt.decode(token);
       response.locals.userId = destructToken._id;
+      console.log(destructToken);
       next();
       return;
     } else {
