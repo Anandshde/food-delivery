@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import api from "@/lib/api";
 
-export type OrderStatus = "Pending" | "Delivered" | "Canceled";
+export type OrderStatus = "PENDING" | "DELIVERED" | "CANCELED";
 
 export interface OrderItem {
   _id: string;
