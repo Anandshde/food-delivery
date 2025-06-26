@@ -210,48 +210,54 @@ export default function CartDrawer({ children }: { children?: ReactNode }) {
             </TabsContent>
           </Tabs>
         </div>
-
         <Button
           className="w-full mt-6"
           onClick={async () => {
             if (cart.length === 0) return;
 
-            const userId = localStorage.getItem("userId"); // get user ID from localStorage
+            if (!address.trim()) {
+              alert("⚠️ Please enter a delivery address.");
+              return;
+            }
 
-            if (!userId) {
-              alert("User not found. Please log in.");
+            const token = localStorage.getItem("token"); // or your auth system
+            if (!token) {
+              alert("⚠️ Please log in first.");
               return;
             }
 
             try {
-              await api.post("/order/createOrder", {
-                user: userId,
+              console.log("Submitting order with:", {
                 address,
-                totalPrice: totalPrice + 0.99, // include shipping
-                foodOrderItems: cart.map((c) => ({
-                  name: c.name,
-                  image: c.image,
-                  price: c.price,
-                  quantity: c.quantity,
-                })),
+                totalPrice: totalPrice + 0.99,
+                foodOrderItems: cart,
               });
+
+              await api.post(
+                "/order/createOrder",
+                {
+                  address,
+                  totalPrice: totalPrice + 0.99,
+                  foodOrderItems: cart.map((c) => ({
+                    name: c.name,
+                    image: c.image,
+                    price: c.price,
+                    quantity: c.quantity,
+                  })),
+                },
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                }
+              );
 
               alert(`✅ Order placed to: ${address}`);
               clearCart();
               setAddress("");
-
-              // Refresh orders
-              const res = await api.get("/order/getOrders");
-              const data: Order[] = res.data.order.map((o: any) => ({
-                id: o._id,
-                date: new Date(o.createdAt).toLocaleDateString(),
-                total: o.totalPrice,
-                status: o.status,
-                items: o.foodOrderItems.map((i: any) => i.name),
-              }));
-              setOrders(data);
-            } catch (err) {
+            } catch (err: any) {
               console.error("Order error:", err);
+              console.log("Server says:", err.response?.data);
               alert("❌ Failed to place order");
             }
           }}
