@@ -25,11 +25,13 @@ export default function CartDrawer({ children }: { children?: ReactNode }) {
     0
   );
 
+  type OrderStatus = "PENDING" | "DELIVERED" | "CANCELED";
+
   type Order = {
     id: string;
     date: string;
     total: number;
-    status: string;
+    status: OrderStatus;
     items: string[];
   };
 
@@ -43,7 +45,7 @@ export default function CartDrawer({ children }: { children?: ReactNode }) {
           id: o._id,
           date: new Date(o.createdAt).toLocaleDateString(),
           total: o.totalPrice,
-          status: o.status,
+          status: o.status as OrderStatus,
           items: o.foodOrderItems.map((i: any) => i.name),
         }));
         setOrders(data);
@@ -190,9 +192,11 @@ export default function CartDrawer({ children }: { children?: ReactNode }) {
                       </p>
                       <span
                         className={`text-xs px-2 py-1 rounded-full ${
-                          order.status === "Pending"
+                          order.status === "PENDING"
                             ? "bg-orange-100 text-orange-600"
-                            : "bg-green-100 text-green-600"
+                            : order.status === "DELIVERED"
+                            ? "bg-green-100 text-green-600"
+                            : "bg-red-100 text-red-600"
                         }`}
                       >
                         {order.status}
@@ -246,7 +250,7 @@ export default function CartDrawer({ children }: { children?: ReactNode }) {
                 id: o._id,
                 date: new Date(o.createdAt).toLocaleDateString(),
                 total: o.totalPrice,
-                status: o.status,
+                status: o.status as OrderStatus,
                 items: o.foodOrderItems.map((i: any) => i.name),
               }));
               setOrders(data);
