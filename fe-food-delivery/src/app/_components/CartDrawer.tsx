@@ -243,9 +243,7 @@ export default function CartDrawer({ children }: { children?: ReactNode }) {
                   address,
                   totalPrice: totalPrice + 0.99,
                   foodOrderItems: cart.map((c) => ({
-                    name: c.name,
-                    image: c.image,
-                    price: c.price,
+                    _id: c.id,
                     quantity: c.quantity,
                   })),
                 },
