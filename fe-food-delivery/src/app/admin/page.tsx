@@ -1,10 +1,4 @@
-import Board from "./_components/board";
-
 const AdminPage = () => {
-  return (
-    <div className="flex">
-      <Board />
-    </div>
-  );
+  return <div className="flex text-9xl">Click Tabs</div>;
 };
 export default AdminPage;

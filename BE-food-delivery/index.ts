@@ -5,6 +5,7 @@ import authRoutes from "./routes/auth.routes";
 import { connectDB } from "./db";
 import OrderRouter from "./routes/order.route";
 import FoodRouter from "./routes/food.route";
+import CategoryRouter from "./routes/category.route";
 
 dotenv.config();
 
@@ -15,6 +16,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/order", OrderRouter);
 app.use("/api/food", FoodRouter);
+app.use("/api/category", CategoryRouter);
 
 connectDB().catch((err) => {
   console.error("❌ Failed to connect to database:", err);

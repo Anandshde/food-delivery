@@ -12,27 +12,34 @@ export default function AdminFoodMenuPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [loading, setLoading] = useState(false);
 
-  const fetchFoods = async () => {
-    try {
-      setLoading(true);
-      const res = await api.get("/food");
-      setFoods(res.data.foods);
-      const unique = Array.from(
-        new Set(res.data.foods.map((f: any) => f.category))
-      ).filter(Boolean) as string[];
-      setCategories(unique);
-      if (!selectedCategory && unique.length > 0) {
-        setSelectedCategory(unique[0]);
-      }
-    } catch (err) {
-      console.error("Failed to fetch foods", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchFoods();
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+
+        // Fetch all foods
+        const foodRes = await api.get("/food");
+        setFoods(foodRes.data.foods);
+
+        // Fetch all categories
+        const catRes = await api.get("/category");
+        const catList: string[] = catRes.data.categories.map(
+          (c: any) => c.name
+        );
+        setCategories(catList);
+
+        // Select first category if not selected
+        if (!selectedCategory && catList.length > 0) {
+          setSelectedCategory(catList[0]);
+        }
+      } catch (err) {
+        console.error("❌ Failed to fetch foods or categories", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
   const filteredFoods = selectedCategory
@@ -61,6 +68,7 @@ export default function AdminFoodMenuPage() {
 
           <h1 className="text-xl font-semibold">Food menu</h1>
         </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <AddFoodDialog
             category={selectedCategory || categories[0] || ""}
@@ -71,6 +79,7 @@ export default function AdminFoodMenuPage() {
               }
             }}
           />
+
           {loading ? (
             <p>Loading...</p>
           ) : filteredFoods.length === 0 ? (
