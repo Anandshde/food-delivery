@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   Dialog,
   DialogTrigger,
@@ -10,14 +9,16 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useState } from "react";
 import { Plus } from "lucide-react";
 import api from "@/lib/api";
 
 interface Props {
   onAdd: (category: string) => void;
+  trigger?: React.ReactNode; // ✅ accept custom trigger
 }
 
-export default function AddCategoryDialog({ onAdd }: Props) {
+export default function AddCategoryDialog({ onAdd, trigger }: Props) {
   const [open, setOpen] = useState(false);
   const [categoryName, setCategoryName] = useState("");
   const [loading, setLoading] = useState(false);
@@ -27,7 +28,7 @@ export default function AddCategoryDialog({ onAdd }: Props) {
     try {
       setLoading(true);
       const res = await api.post("/category", { name: categoryName });
-      onAdd(res.data.name); // assumes backend returns { name }
+      onAdd(res.data.name);
       setCategoryName("");
       setOpen(false);
     } catch (err: any) {
@@ -40,32 +41,31 @@ export default function AddCategoryDialog({ onAdd }: Props) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="rounded-full w-8 h-8 p-0">
-          <Plus size={18} className="text-red-500" />
-        </Button>
+        {trigger || (
+          <Button size="sm" className="flex gap-1 items-center">
+            <Plus className="w-4 h-4" />
+            Add category
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
           <DialogTitle>Add new category</DialogTitle>
         </DialogHeader>
-        <div className="space-y-4">
-          <Input
-            placeholder="Type category name..."
-            value={categoryName}
-            onChange={(e) => setCategoryName(e.target.value)}
-          />
-        </div>
-        <DialogFooter className="mt-4">
+        <Input
+          value={categoryName}
+          onChange={(e) => setCategoryName(e.target.value)}
+          placeholder="Type category name..."
+        />
+        <DialogFooter>
           <DialogClose asChild>
-            <Button type="button" variant="outline">
-              Cancel
-            </Button>
+            <Button variant="outline">Cancel</Button>
           </DialogClose>
           <Button
             onClick={handleAdd}
-            disabled={!categoryName.trim() || loading}
+            disabled={loading || !categoryName.trim()}
           >
-            {loading ? "Adding..." : "Add category"}
+            {loading ? "Saving..." : "Add category"}
           </Button>
         </DialogFooter>
       </DialogContent>
