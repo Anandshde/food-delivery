@@ -8,7 +8,8 @@ interface UploadRequest extends Request {
 
 export const uploadImage = async (req: UploadRequest, res: Response) => {
   if (!req.file || !req.file.buffer) {
-    return res.status(400).json({ error: "No file provided" });
+    res.status(400).json({ error: "No file provided" });
+    return;
   }
 
   try {
@@ -27,12 +28,14 @@ export const uploadImage = async (req: UploadRequest, res: Response) => {
           }
         );
 
-        stream.end(req.file.buffer); // ✅ send buffer to cloudinary
+        stream.end(req.file!.buffer); // ✅ send buffer to cloudinary
       }
     );
 
-    return res.json({ url: result.secure_url });
+    res.json({ url: result.secure_url });
+    return;
   } catch (err: any) {
-    return res.status(500).json({ error: err.message || "Upload failed" });
+    res.status(500).json({ error: err.message || "Upload failed" });
+    return;
   }
 };
