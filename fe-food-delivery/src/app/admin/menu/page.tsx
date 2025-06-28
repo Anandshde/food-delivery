@@ -18,11 +18,9 @@ export default function AdminFoodMenuPage() {
       try {
         setLoading(true);
 
-        // Fetch all foods
         const foodRes = await api.get("/food");
         setFoods(foodRes.data.foods);
 
-        // Fetch all categories
         const catRes = await api.get("/category");
         const catList: string[] = catRes.data.categories.map(
           (c: any) => c.name
@@ -31,7 +29,7 @@ export default function AdminFoodMenuPage() {
         setCats(catRes.data.categories);
 
         if (!selectedCategory && catList.length > 0) {
-          setSelectedCategory(catList[0]);
+          setSelectedCategory(""); // default: show all
         }
       } catch (err) {
         console.error("❌ Failed to fetch foods or categories", err);
@@ -43,11 +41,8 @@ export default function AdminFoodMenuPage() {
     fetchData();
   }, []);
 
-  console.log(cats, "cats");
-
-  const filteredFoods = selectedCategory
-    ? foods.filter((f) => f.category === selectedCategory)
-    : foods;
+  const getFoodsByCategoryId = (catId: string) =>
+    foods.filter((f) => f.category === catId);
 
   return (
     <div className="flex h-screen bg-gray-100 text-sm">
@@ -69,7 +64,10 @@ export default function AdminFoodMenuPage() {
 
             {/* Category Buttons */}
             {categories.map((cat) => {
-              const count = foods.filter((f) => f.category === cat).length;
+              const catObj = cats.find((c) => c.name === cat);
+              const count = catObj
+                ? foods.filter((f) => f.category === catObj._id).length
+                : 0;
               return (
                 <Button
                   key={cat}
@@ -87,47 +85,92 @@ export default function AdminFoodMenuPage() {
 
             {/* Add Category Button */}
             <AddCategoryDialog
-            onAdd={(newCat) => {
-              setCats((prev) => [...prev, newCat]);
-              setCategories((prev) => [...prev, newCat.name]);
-            }}
-            
+              onAdd={(newCat) => {
+                setCats((prev) => [...prev, newCat]);
+                setCategories((prev) => [...prev, newCat.name]);
+              }}
             />
           </div>
           <h1 className="text-xl font-semibold">Food menu</h1>
         </div>
 
-        {/* FOOD GROUPS BY CATEGORY */}
+        {/* DISPLAY FOODS */}
         {loading ? (
           <p>Loading...</p>
-        ) : (
-          (selectedCategory ? [selectedCategory] : categories).map((cat) => {
-            const items = foods.filter((f) => f.category === cat);
+        ) : selectedCategory ? (
+          // Filtered view
+          (() => {
+            const catObj = cats.find((c) => c.name === selectedCategory);
+            const filtered = catObj
+              ? foods.filter((f) => f.category === catObj._id)
+              : [];
+
             return (
-              <div key={cat} className="mb-8">
+              <div className="mb-8">
                 <h2 className="text-xl font-semibold mb-3">
-                  {cat} <span className="text-gray-500">({items.length})</span>
+                  {selectedCategory}{" "}
+                  <span className="text-gray-500">({filtered.length})</span>
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {/* Add New Dish Card */}
+                  {/* Add Dish Card */}
+                  {catObj && (
+                    <AddFoodDialog
+                      category={catObj}
+                      categoryName={selectedCategory}
+                      onAdd={(f) => {
+                        setFoods((prev) => [...prev, f]);
+                        if (f.category && !categories.includes(f.category)) {
+                          setCategories((prev) => [...prev, f.category]);
+                        }
+                      }}
+                    />
+                  )}
+
+                  {/* Foods */}
+                  {filtered.map((food) => (
+                    <div
+                      key={food._id}
+                      className="bg-white p-4 rounded shadow text-center"
+                    >
+                      <img
+                        src={food.image}
+                        alt={food.foodName}
+                        className="h-40 w-full object-cover rounded"
+                      />
+                      <h3 className="mt-2 font-semibold text-red-600">
+                        {food.foodName}
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        {food.ingredients}
+                      </p>
+                      <p className="font-bold">
+                        ${food.price?.toFixed?.(2) ?? food.price}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })()
+        ) : (
+          // All dishes grouped by category
+          cats.map((cat) => {
+            const items = getFoodsByCategoryId(cat._id);
+            return (
+              <div key={cat._id} className="mb-10">
+                <h2 className="text-xl font-semibold mb-3">
+                  {cat.name}{" "}
+                  <span className="text-gray-500">({items.length})</span>
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   <AddFoodDialog
-  category={
-    cats.find((item) => item.name === cat) as Record<string, string>
-  }
-  onAdd={(f) => {
-    setFoods((prev) => [...prev, f]);
-    if (f.category && !categories.includes(f.category)) {
-      setCategories((prev) => [...prev, f.category]);
-    }
-  }}
-/>
+                    category={cat}
+                    categoryName={cat.name}
+                    onAdd={(f) => {
+                      setFoods((prev) => [...prev, f]);
+                    }}
+                  />
 
-                    <p className="text-sm mt-2 text-gray-600">
-                      Add new Dish to {cat}
-                    </p>
-                  </div>
-
-                  {/* Food Items */}
                   {items.map((food) => (
                     <div key={food._id} className="bg-white p-4 rounded shadow">
                       <img
@@ -139,7 +182,7 @@ export default function AdminFoodMenuPage() {
                         {food.foodName}
                       </h3>
                       <p className="text-sm text-gray-600">
-                        {food.ingriedents}
+                        {food.ingredients}
                       </p>
                       <p className="font-bold">
                         ${food.price?.toFixed?.(2) ?? food.price}

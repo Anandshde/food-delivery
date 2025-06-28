@@ -21,7 +21,7 @@ import api from "@/lib/api";
 interface Props {
   category: Record<string, string>;
   onAdd: (food: any) => void;
-  categoryName: String;
+  categoryName: string;
 }
 
 export default function AddFoodDialog({

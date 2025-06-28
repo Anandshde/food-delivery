@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { Food } from "../../models/Food";
-import mongoose from "mongoose";
 import cloudinary from "../../utils/cloudinary";
 
 export const createFood = async (req: Request, res: Response) => {

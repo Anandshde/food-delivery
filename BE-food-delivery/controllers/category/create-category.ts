@@ -1,46 +1,31 @@
 import { Request, Response } from "express";
-import { Food } from "../../models/Food";
-import { CategoryModel } from "../../models/Catergory";
+import { CategoryModel } from "../../models/Category";
 import mongoose from "mongoose";
-import cloudinary from "../../utils/cloudinary";
 
 export const createCategory = async (req: Request, res: Response) => {
   try {
-    const { foodName, price, image, ingriedents, category } = req.body;
+    const { name } = req.body;
 
-    // 🧠 1. Convert category name ("Appetizers") to ObjectId
-    const categoryDoc = await CategoryModel.findOne({ name: category });
-    if (!categoryDoc) {
-      res.status(400).json({ message: "Category not found" });
+    if (!name || typeof name !== "string") {
+      res.status(400).json({ message: "Invalid category name" });
       return;
     }
 
-    // 🌩️ 2. Upload image to Cloudinary if needed
-    let uploadedImage = image;
-    if (image && !image.startsWith("http")) {
-      try {
-        const uploadRes = await cloudinary.uploader.upload(image, {
-          folder: "food",
-        });
-        uploadedImage = uploadRes.secure_url;
-      } catch (uploadErr) {
-        console.error("❌ Failed to upload image to Cloudinary", uploadErr);
-      }
+    // ✅ Check if category already exists
+    const existing = await CategoryModel.findOne({ name });
+    if (existing) {
+      res.status(409).json({ message: "Category already exists" });
+      return;
     }
 
-    // 🍽️ 3. Create food document
-    const food = await Food.create({
+    const category = await CategoryModel.create({
       _id: new mongoose.Types.ObjectId(),
-      foodName,
-      price,
-      image: uploadedImage,
-      ingriedents,
-      category: categoryDoc._id, // ✅ assign ObjectId
+      name,
     });
 
-    res.status(201).json({ food });
+    res.status(201).json({ _id: category._id, name: category.name });
   } catch (err) {
-    console.error("❌ Failed to create food", err);
-    res.status(500).json({ message: "Failed to create food" });
+    console.error("❌ Failed to create category", err);
+    res.status(500).json({ message: "Server error" });
   }
 };

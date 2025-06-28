@@ -1,4 +1,4 @@
-import { FoodMenuSection } from "./FoodMenuSection";
+import FoodMenuSection from "./FoodMenuSection";
 import { Footer } from "./footer";
 import { Header } from "./header";
 
