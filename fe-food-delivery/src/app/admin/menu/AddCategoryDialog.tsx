@@ -14,8 +14,8 @@ import { Plus } from "lucide-react";
 import api from "@/lib/api";
 
 interface Props {
-  onAdd: (category: string) => void;
-  trigger?: React.ReactNode; // ✅ accept custom trigger
+  onAdd: (category: { _id: string; name: string }) => void;
+  trigger?: React.ReactNode;
 }
 
 export default function AddCategoryDialog({ onAdd, trigger }: Props) {
@@ -28,7 +28,8 @@ export default function AddCategoryDialog({ onAdd, trigger }: Props) {
     try {
       setLoading(true);
       const res = await api.post("/category", { name: categoryName });
-      onAdd(res.data.name);
+      onAdd(res.data.category);
+
       setCategoryName("");
       setOpen(false);
     } catch (err: any) {

@@ -2,12 +2,15 @@
 import mongoose, { Schema } from "mongoose";
 
 const FoodSchema = new Schema({
-  _id: Schema.Types.ObjectId,
-  foodName: String,
-  price: Number,
-  image: String,
-  ingriedents: String,
-  category: Schema.Types.ObjectId,
+  foodName: { type: String, required: true },
+  price: { type: Number, required: true },
+  image: { type: String, required: true },
+  ingredients: { type: String, required: true },
+  category: {
+    type: mongoose.Schema.ObjectId,
+    ref: "Categories",
+    required: true,
+  },
   createdAt: { type: Date, default: Date.now, immutable: true },
   updatedAt: { type: Date, default: Date.now },
 });

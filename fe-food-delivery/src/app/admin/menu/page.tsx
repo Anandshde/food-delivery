@@ -11,6 +11,7 @@ export default function AdminFoodMenuPage() {
   const [categories, setCategories] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const [cats, setCats] = useState<Record<string, string>[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -27,6 +28,7 @@ export default function AdminFoodMenuPage() {
           (c: any) => c.name
         );
         setCategories(catList);
+        setCats(catRes.data.categories);
 
         if (!selectedCategory && catList.length > 0) {
           setSelectedCategory(catList[0]);
@@ -40,6 +42,8 @@ export default function AdminFoodMenuPage() {
 
     fetchData();
   }, []);
+
+  console.log(cats, "cats");
 
   const filteredFoods = selectedCategory
     ? foods.filter((f) => f.category === selectedCategory)
@@ -83,7 +87,11 @@ export default function AdminFoodMenuPage() {
 
             {/* Add Category Button */}
             <AddCategoryDialog
-              onAdd={(newCat) => setCategories((prev) => [...prev, newCat])}
+            onAdd={(newCat) => {
+              setCats((prev) => [...prev, newCat]);
+              setCategories((prev) => [...prev, newCat.name]);
+            }}
+            
             />
           </div>
           <h1 className="text-xl font-semibold">Food menu</h1>
@@ -102,16 +110,18 @@ export default function AdminFoodMenuPage() {
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {/* Add New Dish Card */}
-                  <div className="border-2 border-dashed border-red-400 rounded p-4 flex flex-col items-center justify-center text-center min-h-[200px]">
-                    <AddFoodDialog
-                      category={cat}
-                      onAdd={(f) => {
-                        setFoods((prev) => [...prev, f]);
-                        if (f.category && !categories.includes(f.category)) {
-                          setCategories((prev) => [...prev, f.category]);
-                        }
-                      }}
-                    />
+                  <AddFoodDialog
+  category={
+    cats.find((item) => item.name === cat) as Record<string, string>
+  }
+  onAdd={(f) => {
+    setFoods((prev) => [...prev, f]);
+    if (f.category && !categories.includes(f.category)) {
+      setCategories((prev) => [...prev, f.category]);
+    }
+  }}
+/>
+
                     <p className="text-sm mt-2 text-gray-600">
                       Add new Dish to {cat}
                     </p>

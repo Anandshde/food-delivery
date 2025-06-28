@@ -17,14 +17,18 @@ import { Plus } from "lucide-react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as yup from "yup";
 import api from "@/lib/api";
-import { cn } from "@/lib/utils";
 
 interface Props {
-  category: string;
+  category: Record<string, string>;
   onAdd: (food: any) => void;
+  categoryName: String;
 }
 
-export default function AddFoodDialog({ category, onAdd }: Props) {
+export default function AddFoodDialog({
+  category,
+  categoryName,
+  onAdd,
+}: Props) {
   const [open, setOpen] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
@@ -49,10 +53,9 @@ export default function AddFoodDialog({ category, onAdd }: Props) {
   const uploadImageToCloudinary = async (file: File): Promise<string> => {
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("upload_preset", "YOUR_UPLOAD_PRESET"); // replace
-    formData.append("cloud_name", "YOUR_CLOUD_NAME"); // replace
+    formData.append("upload_preset", "food-delivery");
 
-    const res = await fetch(
+    const response = await fetch(
       "https://api.cloudinary.com/v1_1/duazor4ye/image/upload",
       {
         method: "POST",
@@ -60,7 +63,9 @@ export default function AddFoodDialog({ category, onAdd }: Props) {
       }
     );
 
-    const data = await res.json();
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error?.message || "Upload failed");
+
     return data.secure_url;
   };
 
@@ -73,14 +78,14 @@ export default function AddFoodDialog({ category, onAdd }: Props) {
           </div>
           <p className="text-sm text-center text-gray-600">
             Add new Dish to{" "}
-            <span className="font-medium text-black">{category}</span>
+            <span className="font-medium text-black">{categoryName}</span>
           </p>
         </div>
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Add new Dish to {category}</DialogTitle>
+          <DialogTitle>Add new Dish to {categoryName}</DialogTitle>
         </DialogHeader>
 
         <Formik
@@ -98,7 +103,7 @@ export default function AddFoodDialog({ category, onAdd }: Props) {
                 price: Number(values.price),
                 image: imageUrl,
                 ingredients: values.ingredients,
-                category,
+                category: category._id,
               });
 
               onAdd(res.data.food);

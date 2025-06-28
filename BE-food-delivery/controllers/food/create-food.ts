@@ -5,7 +5,7 @@ import cloudinary from "../../utils/cloudinary";
 
 export const createFood = async (req: Request, res: Response) => {
   try {
-    const { foodName, price, image, ingriedents, category } = req.body;
+    const { name, price, image, ingredients, category } = req.body;
 
     let uploadedImage = image;
     if (image) {
@@ -20,11 +20,10 @@ export const createFood = async (req: Request, res: Response) => {
     }
 
     const food = await Food.create({
-      _id: new mongoose.Types.ObjectId(),
-      foodName,
+      foodName: name,
       price,
       image: uploadedImage,
-      ingriedents,
+      ingredients,
       category,
     });
     res.status(200).send({ food });
