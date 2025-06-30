@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const get_all_food_1 = require("../controllers/food/get-all-food");
+const create_food_1 = require("../controllers/food/create-food");
+const token_checker_1 = require("../utils/token-checker");
+const FoodRouter = (0, express_1.Router)();
+FoodRouter.get("/", get_all_food_1.getAllFood);
+FoodRouter.post("/", token_checker_1.tokenChecker, create_food_1.createFood);
+exports.default = FoodRouter;

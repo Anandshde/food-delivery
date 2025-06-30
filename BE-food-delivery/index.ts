@@ -11,6 +11,7 @@ import UploadRouter from "./routes/upload.route";
 dotenv.config();
 
 const app = express();
+const PORT = process.env.PORT || 8000; // ✅ Use Render port
 
 app.use(cors());
 app.use(express.json());
@@ -25,6 +26,6 @@ connectDB().catch((err) => {
   console.error("❌ Failed to connect to database:", err);
 });
 
-app.listen(8000, () => {
-  console.log("🚀 Server running at http://localhost:8000");
+app.listen(PORT, () => {
+  console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
