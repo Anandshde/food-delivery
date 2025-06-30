@@ -6,7 +6,7 @@ import { ChevronLeft } from "lucide-react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as yup from "yup";
 import { useState } from "react";
-import axios from "axios";
+import api from "./hooks/axios";
 import { useRouter } from "next/navigation";
 
 const FormSchema = yup.object().shape({
@@ -39,13 +39,10 @@ export const LeftStep2 = ({ onBack, email }: LeftStep2Props) => {
       validationSchema={FormSchema}
       onSubmit={async (values, { setSubmitting }) => {
         try {
-          const response = await axios.post(
-            "https://food-delivery-1-89kz.onrender.com/api/auth/signup",
-            {
-              email,
-              password: values.pass,
-            }
-          );
+          const response = await api.post("/signup", {
+            email,
+            password: values.pass,
+          });
           alert(response.data.message);
           // Maybe redirect after signup?
           router.push("/login");
