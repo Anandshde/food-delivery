@@ -1,9 +1,5 @@
-// app/(admin)/admin/orders/page.tsx or /components/AdminOrders.tsx
-
 "use client";
 
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -32,7 +28,7 @@ export default function AdminOrdersPage() {
 
   const handleStatusChange = async (id: string, status: OrderStatus) => {
     try {
-      await api.patch("/order/updateStatus", { orderId: id, status });
+      await api.patch("/order/updateStatusBatch", { orderId: id, status });
       setOrders((prev) =>
         prev.map((o) => (o._id === id ? { ...o, status } : o))
       );
@@ -138,11 +134,7 @@ export default function AdminOrdersPage() {
                       }
                       className="border rounded p-1"
                     >
-                      {[
-                        "PENDING",
-                        "DELIVERED",
-                        "CANCELED",
-                      ].map((s) => (
+                      {["PENDING", "DELIVERED", "CANCELED"].map((s) => (
                         <option key={s} value={s}>
                           {s}
                         </option>
