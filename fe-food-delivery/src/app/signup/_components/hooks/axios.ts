@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:8000/api/auth",
+  baseURL: "https://food-delivery-1-89kz.onrender.com/api/auth",
   withCredentials: true,
 });
 

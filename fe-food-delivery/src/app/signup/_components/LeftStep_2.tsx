@@ -40,7 +40,7 @@ export const LeftStep2 = ({ onBack, email }: LeftStep2Props) => {
       onSubmit={async (values, { setSubmitting }) => {
         try {
           const response = await axios.post(
-            "http://localhost:8000/api/auth/signup",
+            "https://food-delivery-1-89kz.onrender.com/api/auth/signup",
             {
               email,
               password: values.pass,
