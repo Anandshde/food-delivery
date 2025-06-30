@@ -1,42 +1,37 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Right } from "../signup/_components/Right";
 import { Login } from "./_components/Login";
-import { useEffect, useState } from "react";
 
-interface LoginProps {
-  setEmail: React.Dispatch<React.SetStateAction<string>>;
-  onNext: () => void;
-}
-
-const LoginUp = ({ onNext, setEmail }: LoginProps) => {
+export default function LoginPage() {
   const [step, setStep] = useState<1 | 2>(1);
+  const [email, setEmail] = useState("");
 
   useEffect(() => {
     if (step === 2) {
-      onNext();
+      // Do something after login, like route control if needed
+      console.log("Login complete for:", email);
     }
-  }, [step, onNext]);
+  }, [step, email]);
 
   return (
     <div className="flex h-screen p-5">
-      {/* Зүүн талын формын хэсэг */}
+      {/* Left: Login Form */}
       <div className="flex w-1/3 justify-center items-center">
         {step === 1 && (
           <Login
             onNext={() => setStep(2)}
             setEmail={setEmail}
-            onBack={() => console.log("Back clicked")} // 👈 энэ мөрийг нэм
+            onBack={() => console.log("Back clicked")}
           />
         )}
       </div>
 
-      {/* Баруун талын зурагтай хэсэг */}
+      {/* Right: Image or Design */}
       <div className="w-2/3 h-full">
         <Right />
       </div>
     </div>
   );
-};
-
-export default LoginUp;
+}

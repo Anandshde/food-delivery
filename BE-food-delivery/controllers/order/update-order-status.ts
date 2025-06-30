@@ -2,33 +2,30 @@ import { Request, Response } from "express";
 import { FoodOrderModel } from "../../models/Order";
 import { FoodOrderStatusEnum } from "../../enums/FoodOrderStatusEnum";
 
-export const updateOrderStatus = async (req: Request, res: Response) => {
-  const { orderId, status } = req.body;
+export const updateOrderStatusBatch = async (req: Request, res: Response) => {
+  const { orderIds, status } = req.body;
 
-  if (!orderId || !status) {
-    res.status(400).send({ message: "Order id and status are required" });
+  if (!orderIds || !Array.isArray(orderIds) || orderIds.length === 0) {
+    res.status(400).json({ message: "Order IDs are required" });
     return;
   }
 
   if (!Object.values(FoodOrderStatusEnum).includes(status)) {
-    res.status(400).send({ message: "Invalid status" });
+    res.status(400).json({ message: "Invalid status" });
     return;
   }
 
   try {
-    const order = await FoodOrderModel.findByIdAndUpdate(
-      orderId,
-      { status },
-      { new: true }
+    const result = await FoodOrderModel.updateMany(
+      { _id: { $in: orderIds } },
+      { $set: { status } }
     );
 
-    if (!order) {
-      res.status(404).send({ message: "Order not found" });
-      return;
-    }
-
-    res.status(200).send({ order });
+    res.status(200).json({
+      message: `${result.modifiedCount} orders updated`,
+    });
   } catch (err) {
-    res.status(500).send({ message: "Failed to update status" });
+    console.error("❌ Failed to update order statuses", err);
+    res.status(500).json({ message: "Failed to update order statuses" });
   }
 };

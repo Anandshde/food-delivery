@@ -11,10 +11,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Calendar28 } from "./calendar";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Pagination } from "./pagination";
 
 export type OrderStatus = "Pending" | "Delivered" | "Canceled";
 
@@ -36,6 +43,9 @@ export default function AdminOrders() {
   const [orders, setOrders] = useState<OrderItem[]>([]);
   const [loading, setLoading] = useState(false);
 
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [newStatus, setNewStatus] = useState<OrderStatus>("Pending");
+
   const handleStatusChange = async (id: string, status: OrderStatus) => {
     try {
       await api.patch("/order/updateStatus", { orderId: id, status });
@@ -44,6 +54,24 @@ export default function AdminOrders() {
       );
     } catch (err) {
       console.error("Failed to update status", err);
+    }
+  };
+
+  const handleBulkStatusChange = async () => {
+    try {
+      await Promise.all(
+        selectedIds.map((id) =>
+          api.patch("/order/updateStatus", { orderId: id, status: newStatus })
+        )
+      );
+      setOrders((prev) =>
+        prev.map((o) =>
+          selectedIds.includes(o._id) ? { ...o, status: newStatus } : o
+        )
+      );
+      setSelectedIds([]);
+    } catch (err) {
+      console.error("❌ Failed to update multiple orders", err);
     }
   };
 
@@ -86,26 +114,51 @@ export default function AdminOrders() {
               Total orders: {orders.length}
             </h4>
           </div>
-          <div className="flex items-center gap-4">
-            <Calendar28 />
-            <Button className="rounded-3xl">Change delivery state</Button>
-          </div>
+
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="secondary" disabled={selectedIds.length === 0}>
+                Change delivery state
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Change delivery status</DialogTitle>
+              </DialogHeader>
+              <div className="flex my-6 justify-evenly">
+                {(["Pending", "Delivered", "Canceled"] as OrderStatus[]).map(
+                  (status) => (
+                    <Button
+                      key={status}
+                      variant={newStatus === status ? "default" : "outline"}
+                      onClick={() => setNewStatus(status)}
+                    >
+                      {status}
+                    </Button>
+                  )
+                )}
+              </div>
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button onClick={handleBulkStatusChange}>Save</Button>
+                </DialogClose>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
 
         <Table className="mt-6">
           <TableCaption>List of recent orders.</TableCaption>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[60px]">
-                <Checkbox />
-              </TableHead>
+              <TableHead className="w-[60px]">✓</TableHead>
               <TableHead className="w-[40px]">№</TableHead>
               <TableHead className="w-[160px]">Customer</TableHead>
               <TableHead className="w-[160px]">Food</TableHead>
               <TableHead className="w-[140px]">Date</TableHead>
               <TableHead className="w-[100px]">Total</TableHead>
-              <TableHead className="w-[220px]">Delivery Address</TableHead>
-              <TableHead className="w-[160px]">Delivery State</TableHead>
+              <TableHead className="w-[220px]">Address</TableHead>
+              <TableHead className="w-[160px]">Status</TableHead>
             </TableRow>
           </TableHeader>
 
@@ -126,7 +179,16 @@ export default function AdminOrders() {
               orders.map((order, index) => (
                 <TableRow key={order._id}>
                   <TableCell>
-                    <Checkbox />
+                    <Checkbox
+                      checked={selectedIds.includes(order._id)}
+                      onCheckedChange={(checked) => {
+                        setSelectedIds((prev) =>
+                          checked
+                            ? [...prev, order._id]
+                            : prev.filter((id) => id !== order._id)
+                        );
+                      }}
+                    />
                   </TableCell>
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>{order.customer}</TableCell>
@@ -175,8 +237,6 @@ export default function AdminOrders() {
             )}
           </TableBody>
         </Table>
-
-        <Pagination />
       </main>
     </div>
   );

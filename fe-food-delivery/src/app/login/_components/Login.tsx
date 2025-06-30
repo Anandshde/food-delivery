@@ -20,7 +20,7 @@ type LoginProps = {
   setEmail: React.Dispatch<React.SetStateAction<string>>;
 };
 
-export const Login = ({ onBack }: LoginProps) => {
+export const Login = ({ onBack, onNext, setEmail }: LoginProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
@@ -36,10 +36,13 @@ export const Login = ({ onBack }: LoginProps) => {
           });
 
           localStorage.setItem("token", res.data.token);
-          // store logged in user's id
           localStorage.setItem("userId", res.data.user._id);
+
+          setEmail(values.email); // ✅ store email in parent state
+          onNext(); // ✅ go to next step or page
+
           alert("Login successful! Welcome back.");
-          router.push("/");
+          router.push("/"); // or remove this if you control flow in parent
         } catch (err: any) {
           alert(err.response?.data?.message || "Invalid credentials");
         } finally {
