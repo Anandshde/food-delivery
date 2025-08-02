@@ -14,17 +14,49 @@ const category_route_1 = __importDefault(require("./routes/category.route"));
 const upload_route_1 = __importDefault(require("./routes/upload.route"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
-const PORT = process.env.PORT || 8000; // ✅ Use Render port
-app.use((0, cors_1.default)());
-app.use(express_1.default.json());
+const PORT = process.env.PORT || 8000;
+app.use((0, cors_1.default)({
+    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    credentials: true
+}));
+app.use(express_1.default.json({ limit: '10mb' }));
+app.use(express_1.default.urlencoded({ extended: true, limit: '10mb' }));
+app.get("/", (req, res) => {
+    res.json({
+        message: "🍕 Food Delivery API is running!",
+        status: "healthy",
+        timestamp: new Date().toISOString()
+    });
+});
+app.get("/api/health", (req, res) => {
+    res.json({
+        status: "healthy",
+        timestamp: new Date().toISOString()
+    });
+});
 app.use("/api/upload", upload_route_1.default);
 app.use("/api/auth", auth_routes_1.default);
 app.use("/api/order", order_route_1.default);
 app.use("/api/food", food_route_1.default);
 app.use("/api/category", category_route_1.default);
-(0, db_1.connectDB)().catch((err) => {
-    console.error("❌ Failed to connect to database:", err);
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ message: "Something went wrong!" });
 });
-app.listen(PORT, () => {
-    console.log(`🚀 Server running at http://localhost:${PORT}`);
+app.use("*", (req, res) => {
+    res.status(404).json({ message: "Route not found" });
 });
+const startServer = async () => {
+    try {
+        await (0, db_1.connectDB)();
+        app.listen(PORT, () => {
+            console.log(`🚀 Server running on port ${PORT}`);
+            console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+        });
+    }
+    catch (error) {
+        console.error("❌ Failed to start server:", error);
+        process.exit(1);
+    }
+};
+startServer();

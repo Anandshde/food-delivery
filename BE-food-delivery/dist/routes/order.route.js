@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-// routes/auth.routes.ts
 const express_1 = require("express");
 const token_checker_1 = require("../utils/token-checker");
 const create_order_1 = require("../controllers/order/create-order");

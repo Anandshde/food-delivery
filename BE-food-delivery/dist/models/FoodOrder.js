@@ -34,7 +34,6 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FoodOrder = void 0;
-// server/models/FoodOrder.ts
 const mongoose_1 = __importStar(require("mongoose"));
 const FoodOrderStatusEnum_1 = require("../enums/FoodOrderStatusEnum");
 const FoodOrderItemSchema = new mongoose_1.Schema({

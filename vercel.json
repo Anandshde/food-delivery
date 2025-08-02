@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "fe-food-delivery/package.json",
+      "use": "@vercel/next",
+      "config": {
+        "distDir": "fe-food-delivery/.next"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "fe-food-delivery/$1"
+    }
+  ],
+  "env": {
+    "NEXT_PUBLIC_API_BASE_URL": "@food-delivery-api-url"
+  }
+}

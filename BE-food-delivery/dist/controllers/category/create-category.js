@@ -13,7 +13,6 @@ const createCategory = async (req, res) => {
             res.status(400).json({ message: "Invalid category name" });
             return;
         }
-        // ✅ Check if category already exists
         const existing = await Category_1.CategoryModel.findOne({ name });
         if (existing) {
             res.status(409).json({ message: "Category already exists" });
