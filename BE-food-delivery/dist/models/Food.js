@@ -34,7 +34,6 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Food = void 0;
-// server/models/Food.ts
 const mongoose_1 = __importStar(require("mongoose"));
 const FoodSchema = new mongoose_1.Schema({
     foodName: { type: String, required: true },

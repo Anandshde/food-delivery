@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-// routes/category.route.ts
 const express_1 = require("express");
 const create_category_1 = require("../controllers/category/create-category");
 const token_checker_1 = require("../utils/token-checker");

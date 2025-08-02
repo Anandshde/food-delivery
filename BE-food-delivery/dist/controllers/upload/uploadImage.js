@@ -21,7 +21,7 @@ const uploadImage = async (req, res) => {
                 }
                 resolve(result);
             });
-            stream.end(req.file.buffer); // ✅ send buffer to cloudinary
+            stream.end(req.file.buffer);
         });
         res.json({ url: result.secure_url });
         return;
